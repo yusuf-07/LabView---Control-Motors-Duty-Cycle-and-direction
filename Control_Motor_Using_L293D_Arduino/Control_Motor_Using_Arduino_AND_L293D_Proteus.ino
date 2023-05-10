@@ -1,0 +1,85 @@
+// Motor control pins
+const int motor1Pin1 = 9;    // Output 1 of L293D connected to Motor 1 terminal 1
+const int motor1Pin2 = 10;   // Output 2 of L293D connected to Motor 1 terminal 2
+const int motor2Pin1 = 11;   // Output 3 of L293D connected to Motor 2 terminal 1
+const int motor2Pin2 = 12;   // Output 4 of L293D connected to Motor 2 terminal 2
+const int enable1Pin = 6;    // Enable pin for Motor 1 connected to Arduino pin 6
+const int enable2Pin = 7;    // Enable pin for Motor 2 connected to Arduino
+
+
+// Dip switch pins
+const int switch1Pin = 2;   // Pin 1B of dip switches connected to Arduino pin 2
+const int switch2Pin = 3;   // Pin 2B of dip switches connected to Arduino pin 3
+const int switch3Pin = 4;   // Pin 3B of dip switches connected to Arduino pin 4
+const int switch4Pin = 5;   // Pin 4B of dip switches connected to Arduino pin 5
+
+//Potentiometers setup pins
+const int potentiometer1Pin = A0;  // Potentiometer 1 connected to Analog pin A0
+const int potentiometer2Pin = A1;  // Potentiometer 2 connected to Analog pin A1
+
+void setup() {
+  // Set motor control pins as OUTPUT
+  pinMode(motor1Pin1, OUTPUT);
+  pinMode(motor1Pin2, OUTPUT);
+  pinMode(motor2Pin1, OUTPUT);
+  pinMode(motor2Pin2, OUTPUT);
+
+  // Set dip switch pins as INPUT_PULLUP
+  pinMode(switch1Pin, INPUT_PULLUP);
+  pinMode(switch2Pin, INPUT_PULLUP);
+  pinMode(switch3Pin, INPUT_PULLUP);
+  pinMode(switch4Pin, INPUT_PULLUP);
+
+}
+
+void loop() {
+  // Read the state of dip switches
+  bool switch1State = digitalRead(switch1Pin);
+  bool switch2State = digitalRead(switch2Pin);
+  bool switch3State = digitalRead(switch3Pin);
+  bool switch4State = digitalRead(switch4Pin);
+
+
+  // Read the values of potentiometers
+  int potentiometer1Value = analogRead(potentiometer1Pin);
+  int potentiometer2Value = analogRead(potentiometer2Pin);
+
+  // Map the potentiometer values to motor speed range (0-255)
+  int motor1Speed = map(potentiometer1Value, 0, 1023, 0, 255);
+  int motor2Speed = map(potentiometer2Value, 0, 1023, 0, 255);
+  // Motor 1 control
+  if (switch1State == HIGH) {
+    // Switch 1 is ON
+    digitalWrite(motor1Pin1, HIGH);
+    digitalWrite(motor1Pin2, LOW);
+  analogWrite(enable1Pin, motor1Speed);
+  } else if (switch2State == HIGH) {
+    // Switch 1 is OFF, Switch 2 is ON
+    digitalWrite(motor1Pin1, LOW);
+    digitalWrite(motor1Pin2, HIGH);
+  analogWrite(enable1Pin, motor1Speed);
+  } else {
+    // Both switches are OFF
+    digitalWrite(motor1Pin1, LOW);
+    digitalWrite(motor1Pin2, LOW);
+  analogWrite(enable1Pin, 0);  // Set motor 1 speed to 0
+  }
+
+  // Motor 2 control
+  if (switch3State == HIGH) {
+    // Switch 3 is ON
+    digitalWrite(motor2Pin1, HIGH);
+    digitalWrite(motor2Pin2, LOW);
+  analogWrite(enable2Pin, motor2Speed);
+  } else if (switch4State == HIGH) {
+    // Switch 3 is OFF, Switch 4 is ON
+    digitalWrite(motor2Pin1, LOW);
+    digitalWrite(motor2Pin2, HIGH);
+  analogWrite(enable2Pin, motor2Speed);
+  } else {
+    // Both switches are OFF
+    digitalWrite(motor2Pin1, LOW);
+    digitalWrite(motor2Pin2, LOW);
+  analogWrite(enable2Pin, 0); // Set motor 2 speed to 0
+  }
+}
